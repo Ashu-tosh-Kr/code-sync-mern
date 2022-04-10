@@ -20,6 +20,7 @@ const EditorPage = () => {
   const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap> | null>(
     null
   );
+  const codeRef = useRef<string | null>(null);
   const location = useLocation();
   const { roomId } = useParams();
   const routerNavigate = useNavigate();
@@ -61,10 +62,17 @@ const EditorPage = () => {
       });
 
       //listeing
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, username }) => {
-        toast.success(`${username} joined the room`);
-        setClients(clients);
-      });
+      socketRef.current.on(
+        ACTIONS.JOINED,
+        ({ clients, username, socketId }) => {
+          toast.success(`${username} joined the room`);
+          setClients(clients);
+          socketRef.current?.emit(ACTIONS.SYNC_CODE, {
+            socketId,
+            code: codeRef.current,
+          });
+        }
+      );
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ username, socketId }) => {
         toast.success(`${username} left the room`);
         setClients((clients) =>
@@ -110,9 +118,9 @@ const EditorPage = () => {
         <Editor
           socketRef={socketRef}
           roomId={roomId as string}
-          // onCodeChange={(code) => {
-          //     codeRef.current = code;
-          // }}
+          onCodeChange={(code) => {
+            codeRef.current = code;
+          }}
         />
       </div>
     </div>

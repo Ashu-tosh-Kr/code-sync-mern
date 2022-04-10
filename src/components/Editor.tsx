@@ -12,12 +12,14 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 const Editor = ({
   socketRef,
   roomId,
+  onCodeChange,
 }: {
   socketRef: React.MutableRefObject<Socket<
     DefaultEventsMap,
     DefaultEventsMap
   > | null>;
   roomId: string;
+  onCodeChange: (x: string) => void;
 }) => {
   const editorRef = useRef<CodeMirror.Editor>();
   useEffect(() => {
@@ -38,6 +40,7 @@ const Editor = ({
           console.log(editor.getValue());
           const { origin } = change;
           const code = editor.getValue();
+          onCodeChange(code);
           if (origin !== "setValue") {
             socketRef.current?.emit(ACTIONS.CODE_CHANGE, { roomId, code });
           }
