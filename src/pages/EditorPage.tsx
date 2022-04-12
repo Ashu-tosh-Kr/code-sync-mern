@@ -6,8 +6,6 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { Socket } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { ACTIONS } from "../Actions";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
@@ -17,9 +15,7 @@ interface stateType {
 }
 const EditorPage = () => {
   /**hooks */
-  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap> | null>(
-    null
-  );
+  const socketRef = useRef<Awaited<ReturnType<typeof initSocket>> | null>(null);
   const codeRef = useRef<string | null>(null);
   const location = useLocation();
   const { roomId } = useParams();
